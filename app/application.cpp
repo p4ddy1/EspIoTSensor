@@ -52,7 +52,7 @@ void gotIp(IPAddress ip, IPAddress netmask, IPAddress gateway){
 void init()
 {
     WifiStation.enable(true);
-    WifiStation.config("Testnedds","testitest552");
+    WifiStation.config(WIFI_SSID,WIFI_PWD);
     WifiAccessPoint.enable(false);
     WifiEvents.onStationGotIP(gotIp);
     WifiStation.connect();
