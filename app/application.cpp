@@ -8,15 +8,26 @@ MqttClient *mqttClient;
 Timer sleepTimer;
 Timer connectionTimeoutTimer;
 
+/**
+ * Array of sensors that will be queried
+ */
 Sensor* sensors[] = {
         new DummySensor(),
         new TempSensor(12)
 };
 
+/**
+ * Called by timer to put the ESP into deep sleep. Timer is used because deep sleep has to be a little bit delayed to be
+ * sure that all of the data is published successfully via MQTT, because we are sending with QoS 0 at the moment.
+ */
 void deepSleep(){
     System.deepSleep(INTERVAL_SEK * 1000);
 }
 
+/**
+ * Called by timer to check if the Wifi and MQTT connections are still alive.
+ * If not, put the ESP into deep sleep
+ */
 void connectionTimeouts(){
     if(WifiStation.isConnected()){
         return;
@@ -27,6 +38,10 @@ void connectionTimeouts(){
     deepSleep();
 }
 
+/**
+ * Queries all sensors in the sensors array, converts measured data into JSON and pushes it to a MQTT channel according
+ * to its name.
+ */
 void measure(){
     StaticJsonBuffer<200> jsonBuffer;
     for(uint8 i = 0; i<(sizeof(sensors) / sizeof(sensors[0])); i++){
@@ -42,6 +57,10 @@ void measure(){
     }
 }
 
+/**
+ * Establishes connection to the MQTT broker. If SSL is enabled, the SHA1 hash of the server certificate will be compared
+ * to the predefined hash in sensor_config.h so that we are sure we are connected to the right server.
+ */
 void mqttConnect(){
 #ifdef ENABLE_SSL
     const uint8_t sha1Fingerprint[] = SSL_SHA1_FINGERPRINT;
@@ -56,7 +75,13 @@ void mqttConnect(){
     mqttClient->connect(DEVICE_NAME,MQTT_USER, MQTT_PWD);
 #endif
 }
-
+/**
+ * Called if the wifi connection is established successfully. Will start the MQTT connection process, queries the sensors
+ * and puts system into deep sleep afterwards.
+ * @param ip
+ * @param netmask
+ * @param gateway
+ */
 void gotIp(IPAddress ip, IPAddress netmask, IPAddress gateway){
     mqttConnect();
     measure();
