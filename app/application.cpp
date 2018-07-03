@@ -11,7 +11,6 @@ Timer connectionTimeoutTimer;
 Sensor* sensors[] = {
         new DummySensor(),
         new TempSensor(12)
-
 };
 
 void deepSleep(){
