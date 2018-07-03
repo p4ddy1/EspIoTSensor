@@ -43,7 +43,7 @@ void connectionTimeouts(){
  * to its name.
  */
 void measure(){
-    StaticJsonBuffer<200> jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(400);
     for(uint8 i = 0; i<(sizeof(sensors) / sizeof(sensors[0])); i++){
         String jsonOut;
         Sensor* currentSensor = sensors[i];
