@@ -29,12 +29,12 @@ void connectionTimeouts(){
 
 void measure(){
     StaticJsonBuffer<200> jsonBuffer;
-    for(int i = 0; i<(sizeof(sensors) / sizeof(sensors[0])); i++){
+    for(uint8 i = 0; i<(sizeof(sensors) / sizeof(sensors[0])); i++){
         String jsonOut;
         Sensor* currentSensor = sensors[i];
         HashMap<String,float>& sensorData = currentSensor->measure();
         JsonObject& root = jsonBuffer.createObject();
-        for(int j = 0; j<sensorData.count(); j++){
+        for(uint8 j = 0; j<sensorData.count(); j++){
             root[sensorData.keyAt(j)] = sensorData.valueAt(j);
         }
         root.printTo(jsonOut);
@@ -42,8 +42,23 @@ void measure(){
     }
 }
 
+void mqttConnect(){
+#ifdef ENABLE_SSL
+    const uint8_t sha1Fingerprint[] = SSL_SHA1_FINGERPRINT;
+    SSLFingerprints fingerprint;
+    fingerprint.certSha1 = new uint8_t[SHA1_SIZE];
+    memcpy(fingerprint.certSha1, sha1Fingerprint, SHA1_SIZE);
+    mqttClient->addSslOptions(SSL_SERVER_VERIFY_LATER);
+    mqttClient->pinCertificate(fingerprint);
+    mqttClient->connect(DEVICE_NAME,MQTT_USER, MQTT_PWD, true);
+#endif
+#ifndef ENABLE_SSL
+    mqttClient->connect(DEVICE_NAME,MQTT_USER, MQTT_PWD);
+#endif
+}
+
 void gotIp(IPAddress ip, IPAddress netmask, IPAddress gateway){
-    mqttClient->connect(DEVICE_NAME);
+    mqttConnect();
     measure();
     sleepTimer.start();
 }

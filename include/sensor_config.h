@@ -10,6 +10,13 @@
     #define WIFI_PWD ""
 
     #define MQTT_HOST ""
-    #define MQTT_PORT 1883
-    #define MQTT_BASE_CHANNEL "home/sensors/testroom"
+    #define MQTT_PORT 8883
+    #define MQTT_USER ""
+    #define MQTT_PWD ""
+    #define MQTT_BASE_CHANNEL "home/sensors/testsensor"
+
+    #ifdef ENABLE_SSL
+
+        #define SSL_SHA1_FINGERPRINT {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}
+    #endif
 #endif //ESPTEMPSENSOR_SENSOR_CONFIG_H

@@ -38,5 +38,6 @@ SPI_MODE = dio
 ## SPIFFS options
 DISABLE_SPIFFS = 1
 # SPIFF_FILES = files
+ENABLE_SSL = 1
 
 
